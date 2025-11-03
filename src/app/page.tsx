@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { 
   Home, 
@@ -1293,6 +1293,9 @@ export default function SweetHome() {
   const [manualCode, setManualCode] = useState('')
   const [showManualEntry, setShowManualEntry] = useState(false)
 
+  // Estados para campos de pesquisa - CORRIGIDO
+  const [searchTerm, setSearchTerm] = useState('')
+
   // Função para obter tradução
   const t = (key: string, params?: {[key: string]: string | number}) => {
     const translation = translations[language as keyof typeof translations]?.[key as keyof typeof translation] || translations.pt[key as keyof typeof translations.pt] || key
@@ -1581,6 +1584,88 @@ export default function SweetHome() {
     setShowScanner(true)
     setScannerStatus('idle')
   }
+
+  // Handlers otimizados com useCallback para evitar re-renders
+  const handleItemNameChange = useCallback((value: string) => {
+    setNewItem(prev => ({ ...prev, name: value }))
+  }, [])
+
+  const handleItemQuantityChange = useCallback((value: string) => {
+    setNewItem(prev => ({ ...prev, quantity: value }))
+  }, [])
+
+  const handleItemCategoryChange = useCallback((value: string) => {
+    setNewItem(prev => ({ ...prev, category: value }))
+  }, [])
+
+  const handleItemDaysChange = useCallback((value: string) => {
+    setNewItem(prev => ({ ...prev, daysLeft: parseInt(value) || 30 }))
+  }, [])
+
+  const handleBillNameChange = useCallback((value: string) => {
+    setNewBill(prev => ({ ...prev, name: value }))
+  }, [])
+
+  const handleBillAmountChange = useCallback((value: string) => {
+    setNewBill(prev => ({ ...prev, amount: value }))
+  }, [])
+
+  const handleBillDueDateChange = useCallback((value: string) => {
+    setNewBill(prev => ({ ...prev, dueDate: value }))
+  }, [])
+
+  const handleBillCategoryChange = useCallback((value: string) => {
+    setNewBill(prev => ({ ...prev, category: value }))
+  }, [])
+
+  const handleReceiptBillNameChange = useCallback((value: string) => {
+    setNewReceipt(prev => ({ ...prev, billName: value }))
+  }, [])
+
+  const handleReceiptAmountChange = useCallback((value: string) => {
+    setNewReceipt(prev => ({ ...prev, amount: value }))
+  }, [])
+
+  const handleReceiptDateChange = useCallback((value: string) => {
+    setNewReceipt(prev => ({ ...prev, date: value }))
+  }, [])
+
+  const handleReceiptTimeChange = useCallback((value: string) => {
+    setNewReceipt(prev => ({ ...prev, time: value }))
+  }, [])
+
+  const handleDreamTitleChange = useCallback((value: string) => {
+    setNewDream(prev => ({ ...prev, title: value }))
+  }, [])
+
+  const handleDreamTargetChange = useCallback((value: string) => {
+    setNewDream(prev => ({ ...prev, target: value }))
+  }, [])
+
+  const handleDreamSavedChange = useCallback((value: string) => {
+    setNewDream(prev => ({ ...prev, saved: value }))
+  }, [])
+
+  const handleReminderTextChange = useCallback((value: string) => {
+    setNewReminder(prev => ({ ...prev, text: value }))
+  }, [])
+
+  const handleReminderTimeChange = useCallback((value: string) => {
+    setNewReminder(prev => ({ ...prev, time: value }))
+  }, [])
+
+  const handleReminderUrgentChange = useCallback((checked: boolean) => {
+    setNewReminder(prev => ({ ...prev, urgent: checked }))
+  }, [])
+
+  const handleManualCodeChange = useCallback((value: string) => {
+    setManualCode(value)
+  }, [])
+
+  // Handler para campo de pesquisa - CORRIGIDO
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchTerm(value)
+  }, [])
 
   // Função para iniciar edição de item do estoque
   const startEditingItem = (item: any) => {
@@ -2107,7 +2192,7 @@ export default function SweetHome() {
               </label>
               <Input
                 value={manualCode}
-                onChange={(e) => setManualCode(e.target.value)}
+                onChange={(e) => handleManualCodeChange(e.target.value)}
                 placeholder={t('scannerCodePlaceholder')}
                 className="bg-white/10 border-white/30 text-white placeholder:text-gray-400"
               />
@@ -2527,7 +2612,7 @@ export default function SweetHome() {
               </label>
               <Input
                 value={newItem.name}
-                onChange={(e) => setNewItem(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) => handleItemNameChange(e.target.value)}
                 placeholder={t('exampleItems')}
                 className={customBackgrounds.pantry ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-gray-300' : ''}
               />
@@ -2539,7 +2624,7 @@ export default function SweetHome() {
               </label>
               <Input
                 value={newItem.quantity}
-                onChange={(e) => setNewItem(prev => ({ ...prev, quantity: e.target.value }))}
+                onChange={(e) => handleItemQuantityChange(e.target.value)}
                 placeholder={t('exampleQuantity')}
                 className={customBackgrounds.pantry ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-gray-300' : ''}
               />
@@ -2551,7 +2636,7 @@ export default function SweetHome() {
               </label>
               <select
                 value={newItem.category}
-                onChange={(e) => setNewItem(prev => ({ ...prev, category: e.target.value }))}
+                onChange={(e) => handleItemCategoryChange(e.target.value)}
                 className={`w-full p-2 border rounded-md ${
                   customBackgrounds.pantry 
                     ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white' 
@@ -2573,7 +2658,7 @@ export default function SweetHome() {
               <Input
                 type="number"
                 value={newItem.daysLeft}
-                onChange={(e) => setNewItem(prev => ({ ...prev, daysLeft: parseInt(e.target.value) || 30 }))}
+                onChange={(e) => handleItemDaysChange(e.target.value)}
                 min="1"
                 className={customBackgrounds.pantry ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white' : ''}
               />
@@ -2603,10 +2688,12 @@ export default function SweetHome() {
         </Card>
       )}
 
-      {/* Barra de busca */}
+      {/* Barra de busca - CORRIGIDA */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
         <Input 
+          value={searchTerm}
+          onChange={(e) => handleSearchChange(e.target.value)}
           placeholder={t('searchItem')}
           className={`pl-10 ${customBackgrounds.pantry ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-gray-300' : ''}`}
         />
@@ -2751,7 +2838,7 @@ export default function SweetHome() {
               </label>
               <Input
                 value={newBill.name}
-                onChange={(e) => setNewBill(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) => handleBillNameChange(e.target.value)}
                 placeholder={t('exampleBills')}
                 className={customBackgrounds.bills ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-gray-300' : ''}
               />
@@ -2763,7 +2850,7 @@ export default function SweetHome() {
               </label>
               <Input
                 value={newBill.amount}
-                onChange={(e) => setNewBill(prev => ({ ...prev, amount: e.target.value }))}
+                onChange={(e) => handleBillAmountChange(e.target.value)}
                 placeholder={t('exampleAmount')}
                 className={customBackgrounds.bills ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-gray-300' : ''}
               />
@@ -2775,7 +2862,7 @@ export default function SweetHome() {
               </label>
               <Input
                 value={newBill.dueDate}
-                onChange={(e) => setNewBill(prev => ({ ...prev, dueDate: e.target.value }))}
+                onChange={(e) => handleBillDueDateChange(e.target.value)}
                 placeholder={t('exampleDate')}
                 className={customBackgrounds.bills ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-gray-300' : ''}
               />
@@ -2787,7 +2874,7 @@ export default function SweetHome() {
               </label>
               <select
                 value={newBill.category}
-                onChange={(e) => setNewBill(prev => ({ ...prev, category: e.target.value }))}
+                onChange={(e) => handleBillCategoryChange(e.target.value)}
                 className={`w-full p-2 border rounded-md ${
                   customBackgrounds.bills 
                     ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white' 
@@ -2911,7 +2998,7 @@ export default function SweetHome() {
                   </label>
                   <Input
                     value={newReceipt.billName}
-                    onChange={(e) => setNewReceipt(prev => ({ ...prev, billName: e.target.value }))}
+                    onChange={(e) => handleReceiptBillNameChange(e.target.value)}
                     placeholder="Ex: Energia"
                     className={customBackgrounds.bills ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-gray-300' : ''}
                   />
@@ -2923,7 +3010,7 @@ export default function SweetHome() {
                   </label>
                   <Input
                     value={newReceipt.amount}
-                    onChange={(e) => setNewReceipt(prev => ({ ...prev, amount: e.target.value }))}
+                    onChange={(e) => handleReceiptAmountChange(e.target.value)}
                     placeholder="R$ 150,00"
                     className={customBackgrounds.bills ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-gray-300' : ''}
                   />
@@ -2938,7 +3025,7 @@ export default function SweetHome() {
                   <Input
                     type="date"
                     value={newReceipt.date}
-                    onChange={(e) => setNewReceipt(prev => ({ ...prev, date: e.target.value }))}
+                    onChange={(e) => handleReceiptDateChange(e.target.value)}
                     className={customBackgrounds.bills ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white' : ''}
                   />
                 </div>
@@ -2950,7 +3037,7 @@ export default function SweetHome() {
                   <Input
                     type="time"
                     value={newReceipt.time}
-                    onChange={(e) => setNewReceipt(prev => ({ ...prev, time: e.target.value }))}
+                    onChange={(e) => handleReceiptTimeChange(e.target.value)}
                     className={customBackgrounds.bills ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white' : ''}
                   />
                 </div>
@@ -3556,7 +3643,7 @@ export default function SweetHome() {
                 </label>
                 <Input
                   value={newDream.title}
-                  onChange={(e) => setNewDream(prev => ({ ...prev, title: e.target.value }))}
+                  onChange={(e) => handleDreamTitleChange(e.target.value)}
                   placeholder={t('exampleDream')}
                   className={customBackgrounds.extras ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-gray-300' : ''}
                 />
@@ -3569,7 +3656,7 @@ export default function SweetHome() {
                   </label>
                   <Input
                     value={newDream.target}
-                    onChange={(e) => setNewDream(prev => ({ ...prev, target: e.target.value }))}
+                    onChange={(e) => handleDreamTargetChange(e.target.value)}
                     placeholder={t('exampleTarget')}
                     className={customBackgrounds.extras ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-gray-300' : ''}
                   />
@@ -3581,7 +3668,7 @@ export default function SweetHome() {
                   </label>
                   <Input
                     value={newDream.saved}
-                    onChange={(e) => setNewDream(prev => ({ ...prev, saved: e.target.value }))}
+                    onChange={(e) => handleDreamSavedChange(e.target.value)}
                     placeholder={t('exampleSaved')}
                     className={customBackgrounds.extras ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-gray-300' : ''}
                   />
@@ -3709,7 +3796,7 @@ export default function SweetHome() {
                 </label>
                 <Input
                   value={newReminder.text}
-                  onChange={(e) => setNewReminder(prev => ({ ...prev, text: e.target.value }))}
+                  onChange={(e) => handleReminderTextChange(e.target.value)}
                   placeholder={t('exampleReminder')}
                   className={customBackgrounds.extras ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white placeholder:text-gray-300' : ''}
                 />
@@ -3723,7 +3810,7 @@ export default function SweetHome() {
                   <Input
                     type="time"
                     value={newReminder.time}
-                    onChange={(e) => setNewReminder(prev => ({ ...prev, time: e.target.value }))}
+                    onChange={(e) => handleReminderTimeChange(e.target.value)}
                     className={customBackgrounds.extras ? 'bg-white/10 backdrop-blur-sm border-white/30 text-white' : ''}
                   />
                 </div>
@@ -3733,7 +3820,7 @@ export default function SweetHome() {
                     <input
                       type="checkbox"
                       checked={newReminder.urgent}
-                      onChange={(e) => setNewReminder(prev => ({ ...prev, urgent: e.target.checked }))}
+                      onChange={(e) => handleReminderUrgentChange(e.target.checked)}
                       className="rounded"
                     />
                     <span className="text-sm">{t('urgent')}</span>
